@@ -1,0 +1,38 @@
+{
+	"name": "AzuresqlstoredProc",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDB_lkpDemp",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "PipelineRunID",
+				"type": "varchar"
+			},
+			{
+				"name": "DataFactoryName",
+				"type": "varchar"
+			},
+			{
+				"name": "PipelineName",
+				"type": "varchar"
+			},
+			{
+				"name": "PipelineTriggerName",
+				"type": "varchar"
+			},
+			{
+				"name": "PipelineTriggerTime",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "tbl_PipelineExecDetails"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

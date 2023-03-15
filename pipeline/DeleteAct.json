@@ -1,0 +1,48 @@
+{
+	"name": "DeleteAct",
+	"properties": {
+		"activities": [
+			{
+				"name": "DeletetxtFiles",
+				"type": "Delete",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Deletetxt",
+						"value": "Deletes Txt files from Output Folder"
+					}
+				],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "outputFolderDS",
+						"type": "DatasetReference"
+					},
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureBlobStorage1",
+							"type": "LinkedServiceReference"
+						},
+						"path": "adftest"
+					},
+					"enableLogging": true,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"wildcardFileName": "*.txt",
+						"enablePartitionDiscovery": false
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-03-01T17:07:35Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

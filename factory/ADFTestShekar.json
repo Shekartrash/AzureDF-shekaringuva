@@ -1,0 +1,9 @@
+{
+	"name": "ADFTestShekar",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "93d68299-b61d-4702-8ef9-322ef2def3e4",
+		"tenantId": "476390c8-65fb-4ccf-8ec0-ecf36217f2fd"
+	}
+}

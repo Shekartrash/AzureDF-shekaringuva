@@ -1,0 +1,47 @@
+{
+	"name": "ScriptActivity-Demo",
+	"properties": {
+		"activities": [
+			{
+				"name": "Script1",
+				"type": "Script",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDB",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"parameters": [
+								{
+									"name": "PipelineRunID",
+									"type": "String",
+									"value": "",
+									"direction": "Input"
+								}
+							],
+							"type": "Query",
+							"text": "select * from tbl_PipelineExecDetails\nprint 'here is the output for Pipelinexecdtls table'"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00",
+					"logSettings": {
+						"logDestination": "ActivityOutput"
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-03-11T06:50:02Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

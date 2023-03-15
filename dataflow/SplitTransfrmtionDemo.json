@@ -1,0 +1,218 @@
+{
+	"name": "SplitTransfrmtionDemo",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EmpDataset",
+						"type": "DatasetReference"
+					},
+					"name": "EmpSalcsv"
+				},
+				{
+					"dataset": {
+						"referenceName": "empcsv",
+						"type": "DatasetReference"
+					},
+					"name": "empcsv"
+				},
+				{
+					"dataset": {
+						"referenceName": "DeptDataSetCsv",
+						"type": "DatasetReference"
+					},
+					"name": "DeptDataSet"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "empdeptTarget",
+						"type": "DatasetReference"
+					},
+					"name": "MaleSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "empdeptTarget",
+						"type": "DatasetReference"
+					},
+					"name": "Femalesink"
+				},
+				{
+					"dataset": {
+						"referenceName": "empdeptTarget",
+						"type": "DatasetReference"
+					},
+					"name": "PivotTrvlSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "empdeptTarget",
+						"type": "DatasetReference"
+					},
+					"name": "EmpSKSink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SplitGender"
+				},
+				{
+					"name": "ExpLevel"
+				},
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "sort1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "pivotTrvl"
+				},
+				{
+					"name": "MapDrifted1",
+					"description": "Creates an explicit mapping for each drifted column"
+				},
+				{
+					"name": "SKEmp"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "window1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ID as string,",
+				"          Experience_Years as integer '000',",
+				"          Age as integer '000',",
+				"          Gender as string,",
+				"          Salary as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EmpSalcsv",
+				"source(output(",
+				"          empid as string,",
+				"          enmae as string,",
+				"          cntry as string,",
+				"          dept as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> empcsv",
+				"source(output(",
+				"          ID as integer '000',",
+				"          Dept_name as string,",
+				"          location as string,",
+				"          travel_required as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> DeptDataSet",
+				"EmpSalcsv split(equals(Gender, 'Male'),",
+				"     equals(Gender, 'Female'),",
+				"     disjoint: false) ~> SplitGender@(Male, Female)",
+				"SplitGender@Male derive(ExpLevel = upper(iif(Experience_Years>=5, 'senior', 'Junior')),",
+				"          Gender = upper(Gender)) ~> ExpLevel",
+				"ExpLevel, empcsv lookup(ID == empid,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 sort(asc(Age, true)) ~> sort1",
+				"sort1 select(mapColumn(",
+				"          ID,",
+				"          Experience_Years,",
+				"          Age,",
+				"          Sex = Gender,",
+				"          Salary,",
+				"          ExpLevel",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"DeptDataSet pivot(groupBy(Dept_name),",
+				"     pivotBy(travel_required),",
+				"     TravelReq = count(ID),",
+				"     columnNaming: '$N$V',",
+				"     lateral: false) ~> pivotTrvl",
+				"pivotTrvl derive(TravelReqno = toLong(byName('TravelReqno')),",
+				"          TravelReqyes = toLong(byName('TravelReqyes'))) ~> MapDrifted1",
+				"empcsv keyGenerate(output(SK_Emp as long),",
+				"     startAt: 1000L,",
+				"     stepValue: 1000L) ~> SKEmp",
+				"SKEmp select(mapColumn(",
+				"          SurrKey = SK_Emp,",
+				"          enmae,",
+				"          EmpID = empid,",
+				"          Country = cntry,",
+				"          dept",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select1 window(over(Experience_Years),",
+				"     asc(Salary, true),",
+				"     Dense_rnk = denseRank()) ~> window1",
+				"window1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['MaleEmpNew'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ID,",
+				"          Experience_Years,",
+				"          Age,",
+				"          Sex,",
+				"          Salary,",
+				"          ExpLevel,",
+				"          Dense_rnk",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> MaleSink",
+				"SplitGender@Female sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['FemaleEmp'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ID,",
+				"          Experience_Years,",
+				"          Age,",
+				"          Gender,",
+				"          Salary",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> Femalesink",
+				"MapDrifted1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['PivotTravelReq'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Dept_name,",
+				"          TravelReqno,",
+				"          TravelReqyes",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> PivotTrvlSink",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['SK_Emp'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          SurrKey,",
+				"          enmae,",
+				"          EmpID,",
+				"          Country,",
+				"          dept",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> EmpSKSink"
+			]
+		}
+	}
+}

@@ -1,0 +1,48 @@
+{
+	"name": "filterTrDemo",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "empcsv",
+						"type": "DatasetReference"
+					},
+					"name": "empcsv"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "empdeptTarget",
+						"type": "DatasetReference"
+					},
+					"name": "opDept40"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filDept40"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          empid as string,",
+				"          enmae as string,",
+				"          cntry as string,",
+				"          dept as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> empcsv",
+				"empcsv filter(equals(dept,'40')) ~> filDept40",
+				"filDept40 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> opDept40"
+			]
+		}
+	}
+}
