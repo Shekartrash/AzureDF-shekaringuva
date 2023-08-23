@@ -1,0 +1,16 @@
+{
+	"name": "ds_sql_Customercourse",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_sqlDB",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Customercourse"
+		}
+	}
+}
