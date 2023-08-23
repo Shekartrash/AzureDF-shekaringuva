@@ -1,10 +1,10 @@
 {
-	"name": "pl_JsonFlattening",
+	"name": "pl_Web",
 	"properties": {
 		"activities": [
 			{
-				"name": "JsonFlattening",
-				"type": "ExecuteDataFlow",
+				"name": "Web1",
+				"type": "WebActivity",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -15,20 +15,13 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataflow": {
-						"referenceName": "Json_Flattening",
-						"type": "DataFlowReference"
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
+					"url": "https://accountdp203.blob.core.windows.net/csv/product.csv",
+					"method": "GET"
 				}
 			}
 		],
 		"annotations": [],
-		"lastPublishTime": "2023-08-23T06:08:05Z"
+		"lastPublishTime": "2023-08-23T10:26:40Z"
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
 }
