@@ -1599,7 +1599,13 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError') ~> Customercourse"
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          customerid,",
+						"          customername,",
+						"          registered,",
+						"          courses",
+						"     )) ~> Customercourse"
 					]
 				}
 			},
