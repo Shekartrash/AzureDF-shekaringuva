@@ -1,5 +1,13 @@
 {
 	"name": "appfactory2023-dp203",
+	"properties": {
+		"globalParameters": {
+			"test_global": {
+				"type": "string",
+				"value": "test"
+			}
+		}
+	},
 	"location": "eastus",
 	"identity": {
 		"type": "SystemAssigned",
